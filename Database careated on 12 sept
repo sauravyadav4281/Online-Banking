@@ -1,0 +1,178 @@
+Identify Domain Objects and Attributes
+Based on the functional requirements provided, the following domain objects and their attributes can be identified:
+
+User
+
+UserID (Primary Key)
+Username
+Password
+Role (Admin/User)
+Email
+Mobile
+Address
+AccountStatus (Active/Blocked)
+
+Account
+
+AccountID (Primary Key)
+UserID (Foreign Key)
+AccountType (Primary/Savings)
+Balance
+CreationDate
+Transaction
+TransactionID (Primary Key)
+AccountID (Foreign Key)
+TransactionType (Deposit/Withdrawal/Transfer)
+Amount
+Date
+TransactionPassword
+TransactionStatus (Pending/Completed/Rejected)
+
+Loan
+
+LoanID (Primary Key)
+UserID (Foreign Key)
+LoanAmount
+LoanStatus (Approved/Rejected/Pending)
+RequestDate
+ApprovalDate
+
+ChequeBookRequest
+
+RequestID (Primary Key)
+UserID (Foreign Key)
+AccountID (Foreign Key)
+RequestDate
+Status (Pending/Approved/Rejected)
+
+FundsTransfer
+
+TransferID (Primary Key)
+FromAccountID (Foreign Key)
+ToAccountID (Foreign Key)
+Amount
+TransferDate
+Status (Pending/Completed/Failed)
+
+2. Create Database Tables and Relationships
+Here’s a brief overview of the tables and their relationships:
+
+
+CREATE TABLE User (
+
+    UserID INT PRIMARY KEY AUTO_INCREMENT,
+
+    Username VARCHAR(50) NOT NULL UNIQUE,
+
+    Password VARCHAR(255) NOT NULL,
+
+    Role ENUM('Admin', 'User') NOT NULL,
+
+    Email VARCHAR(100),
+
+    Mobile VARCHAR(15),
+
+    Address TEXT,
+
+    AccountStatus ENUM('Active', 'Blocked') DEFAULT 'Active'
+
+);
+
+ 
+CREATE TABLE Account (
+
+    AccountID INT PRIMARY KEY AUTO_INCREMENT,
+
+    UserID INT,
+
+    AccountType ENUM('Primary', 'Savings') NOT NULL,
+
+    Balance DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+
+    CreationDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (UserID) REFERENCES User(UserID)
+
+);
+
+ 
+CREATE TABLE Transaction (
+
+    TransactionID INT PRIMARY KEY AUTO_INCREMENT,
+
+    AccountID INT,
+
+    TransactionType ENUM('Deposit', 'Withdrawal', 'Transfer') NOT NULL,
+
+    Amount DECIMAL(10, 2) NOT NULL,
+
+    Date DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    TransactionPassword VARCHAR(255),
+
+    TransactionStatus ENUM('Pending', 'Completed', 'Rejected') DEFAULT 'Pending',
+
+    FOREIGN KEY (AccountID) REFERENCES Account(AccountID)
+
+);
+
+ 
+CREATE TABLE Loan (
+
+    LoanID INT PRIMARY KEY AUTO_INCREMENT,
+
+    UserID INT,
+
+    LoanAmount DECIMAL(10, 2) NOT NULL,
+
+    LoanStatus ENUM('Approved', 'Rejected', 'Pending') DEFAULT 'Pending',
+
+    RequestDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    ApprovalDate DATETIME,
+
+    FOREIGN KEY (UserID) REFERENCES User(UserID)
+
+);
+
+ 
+CREATE TABLE ChequeBookRequest (
+
+    RequestID INT PRIMARY KEY AUTO_INCREMENT,
+
+    UserID INT,
+
+    AccountID INT,
+
+    RequestDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    Status ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',
+
+    FOREIGN KEY (UserID) REFERENCES User(UserID),
+
+    FOREIGN KEY (AccountID) REFERENCES Account(AccountID)
+
+);
+
+ 
+CREATE TABLE FundsTransfer (
+
+    TransferID INT PRIMARY KEY AUTO_INCREMENT,
+
+    FromAccountID INT,
+
+    ToAccountID INT,
+
+    Amount DECIMAL(10, 2) NOT NULL,
+
+    TransferDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    Status ENUM('Pending', 'Completed', 'Failed') DEFAULT 'Pending',
+
+    FOREIGN KEY (FromAccountID) REFERENCES Account(AccountID),
+
+    FOREIGN KEY (ToAccountID) REFERENCES Account(AccountID)
+
+);
+
+ 
